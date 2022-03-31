@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 
 import img1 from '../../assets/Nfts/bighead.svg';
@@ -8,6 +8,11 @@ import img4 from '../../assets/Nfts/bighead-3.svg';
 import img5 from '../../assets/Nfts/bighead-4.svg';
 
 import ETH from '../../assets/icons8-ethereum-48.png'
+
+
+import { useMoralis } from "react-moralis"
+
+import {cryptoboysAddress, chain } from "../../config"
 
 const Section = styled.section`
 min-height: 100vh;
@@ -36,8 +41,6 @@ overflow: hidden;
   }
 }
 `
-
-
 
 const ImgContainer = styled.div`
 width: 15rem;
@@ -95,7 +98,6 @@ h1{
   }
 
 }
-
 `
 
 const Price = styled.div`
@@ -110,49 +112,111 @@ img{
 }
 `
 
-
-const NftItem = ({img, number=0, }) => {
-
-
-      
-      
-        return(
-          <ImgContainer >
+const NftItem = ({img, tokenId, price=0}) => {
+    return(
+        <ImgContainer >
             <img width={500} height={400}  src={img} alt="The Weirdos" />
             <Details>
-              <div>
+                <div>
                 <span>Weirdos</span> <br />
-                <h1>#{number}</h1>
-              </div>
-      
-              <div>
-                <h1>SELL</h1>
+                <h1>#{tokenId}</h1>
+                </div>
+
+                <div>
+                <h1>SELL {price}</h1>
                 
-              </div>
+                </div>
             </Details>
-          </ImgContainer>
-        )
-      } 
+        </ImgContainer>
+    )
+} 
       
-
-
 const MyNFT = () => {
 
-    
-      return ( 
-            <Section id="showcase">
-            <Row direction="none">
-              <NftItem img={img1}  number={852} price={1}    />
-              <NftItem img={img2}  number={123} price={1.2}   />
-              <NftItem img={img3}  number={456} price={2.5}    />
-              <NftItem img={img4}  number={666} price={3.5}   />
-              <NftItem img={img5}  number={452} price={4.7}  />
+    const { user, account, authenticate, Moralis } = useMoralis();
+    const [nfts, setNFTs] = useState([]);
+
+    async function initApp () {
+        console.log(user);
+
+        if (!user) {
+            try {
+                user = await authenticate({ signingMessage: "Hello World!" })
+                // allNFTs();
+            } catch(error) {
+                console.log(error)
+            }
+        } else {
+            // allNFTs();
+        }
+    }
+
+    async function allNFTs(){
+        // await Moralis.enableWeb3();
         
-            </Row>
+        const options = {
+            address: account,
+            token_address: cryptoboysAddress,
+            chain: chain,
+        };
+        
+        const allCryptoBoys = await Moralis.Web3API.account.getNFTsForContract(options);
 
-            </Section>
+        allCryptoBoys.result.forEach(function(nft){
 
-       );
+            let url = fixUrl(nft.token_uri);
+            let id = nft.token_id;
+            fetch(url)
+            .then(res => res.json())
+            .then(data => {
+
+
+                var resp = {
+                    'img':fixUrl(data.image),
+                    'tokebId':id,
+                    'price':1,
+                }
+
+                nfts.push(resp);
+            });
+        })
+    }
+
+    function fixUrl(url) {
+        if (url.startsWith("ipfs")) {
+            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://ipfs/")[1];
+        } else {
+            if (url.endsWith("json")) {
+                return url + "?format=json";
+            }else {
+                return url + ".json?format=json";
+            }
+        }
+    }
+
+    
+    allNFTs();
+
+    return ( 
+        <Section id="showcase">
+        <Row direction="none">
+        {nfts.map((cryptoboy) => {
+            console.log(cryptoboy);
+            return (
+                <NftItem img={cryptoboy.img}  tokebId={cryptoboy.tokebId} price={cryptoboy.price} />
+            )
+        })}
+            {/* <NftItem img={img1}  number={852} price={1}    />
+            <NftItem img={img2}  number={123} price={1.2}   />
+            <NftItem img={img3}  number={456} price={2.5}    />
+            <NftItem img={img4}  number={666} price={3.5}   />
+            <NftItem img={img5}  number={452} price={4.7}  /> */}
+    
+        </Row>
+
+        </Section>
+
+    );
 }
  
 export default MyNFT;
