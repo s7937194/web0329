@@ -3,6 +3,11 @@ import styled from "styled-components";
 import Typewriter from "typewriter-effect";
 import Button from './Button';
 
+import { useMoralis } from "react-moralis"
+
+import {cryptoboysAddress, chain } from "../config"
+import CryptoBoyContract from "../abis/CryptoBoys.json"
+
 const Title = styled.h2`
   font-size: ${(props) => props.theme.fontxxl};
   text-transform: capitalize;
@@ -74,39 +79,78 @@ const ButtonContainer = styled.div`
 
 `
 const TypeWriterText = () => {
-  return (
-    <>
-    <Title>
-      Discover a new era of cool
-      <Typewriter
-        options={{
-          autoStart: true,
-          loop: true,
-        }}
-        onInit={(typewriter) => {
-          typewriter
-          .typeString(`<span class="text-1">NFTs.</span>`)
-          .pauseFor(2000)
-          .deleteAll()
-          .typeString(`<span class="text-2">Collectible Items.</span>`)
-          .pauseFor(2000)
-          .deleteAll()
-          .typeString(`<span class="text-3">Ape Killers!</span>`)
-          .pauseFor(2000)
-          .deleteAll()
-          .start();
-        }}
-      />      
-    </Title>
-    
-    <SubTitle>Bored Of Apes? Try Something New.</SubTitle>
-    
-    {/*鑄造*/ }
-    <ButtonContainer>
-      <Button text="Mint" link="" />
-    </ButtonContainer>
-    </>
-  );
+
+    const { user, authenticate, Moralis } = useMoralis();
+
+    async function initApp () {
+        console.log(user);
+
+        if (!user) {
+            try {
+                user = await authenticate({ signingMessage: "Hello World!" })
+                mintNFT();
+            } catch(error) {
+                console.log(error)
+            }
+        } else {
+            mintNFT();
+        }
+    }
+
+    async function mintNFT(){
+        await Moralis.enableWeb3();
+        const options = {
+            contractAddress: cryptoboysAddress,
+            abi: CryptoBoyContract,
+        };
+
+        // const name = await Moralis.executeFunction({
+        //     functionName: "name",
+        //     ...options,
+        // });
+        // console.log(name);
+
+        const mint = await Moralis.executeFunction({
+            functionName: "mint",
+            msgValue: Moralis.Units.ETH("0.025"),
+            ...options,
+        });
+        console.log(mint);
+    }
+
+    return (
+        <>
+        <Title>
+            Discover a new era of cool
+            <Typewriter
+                options={{
+                    autoStart: true,
+                    loop: true,
+                }}
+                onInit={(typewriter) => {
+                    typewriter
+                    .typeString(`<span class="text-1">NFTs.</span>`)
+                    .pauseFor(2000)
+                    .deleteAll()
+                    .typeString(`<span class="text-2">Collectible Items.</span>`)
+                    .pauseFor(2000)
+                    .deleteAll()
+                    .typeString(`<span class="text-3">Ape Killers!</span>`)
+                    .pauseFor(2000)
+                    .deleteAll()
+                    .start();
+                }}
+            />      
+        </Title>
+
+        <SubTitle>Bored Of Apes? Try Something New.</SubTitle>
+
+        {/*鑄造*/ }
+        <ButtonContainer>
+            <Button text="Mint" click={initApp}/>
+        </ButtonContainer>
+        </>
+    );
 };
 
 export default TypeWriterText;

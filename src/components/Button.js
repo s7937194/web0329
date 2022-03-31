@@ -39,12 +39,11 @@ position: relative;
 }
 `
 
-const Button = ({text, link}) => {
+const Button = ({text, link, click}) => {
   return (
-<a href={link} aria-label={text} target="_blank" rel="noreferrer" >
-<Btn>{text}</Btn>
-</a>
-    
+    <a href={link} aria-label={text} onClick={click} target="_blank" rel="noreferrer" >
+      <Btn>{text}</Btn>
+    </a>
   )
 }
 

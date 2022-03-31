@@ -8,7 +8,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import Tokenomics from "./page/Home/Tokenomics";
 import Roarity from "./page/Home/Roarity";
 
-
 function App() {
   return (
     <main>
