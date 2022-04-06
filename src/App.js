@@ -9,28 +9,22 @@ import Tokenomics from "./page/Home/Tokenomics";
 import Roarity from "./page/Home/Roarity";
 
 function App() {
-  return (
-    <main>
-      
-  
-
-        {/* <Suspense fallback={<Loading />}> */}
-       
-          <Home />
-          <About />
-          <Roadmap />
-          <Tokenomics />
-          <Roarity />
-          <Showcase />
-          <Team />
-          <Faq />
-          {/* <ScrollToTop scrollPosition={y}/> */}
-          <ScrollToTop />{" "}
-        {/* </Suspense> */}
-
-
-    </main>
-  );
+    return (
+        <main>
+            {/* <Suspense fallback={<Loading />}> */}
+                <Home />
+                <About />
+                <Roadmap />
+                <Tokenomics />
+                <Roarity />
+                <Showcase />
+                <Team />
+                <Faq />
+                {/* <ScrollToTop scrollPosition={y}/> */}
+                <ScrollToTop />{" "}
+            {/* </Suspense> */}
+        </main>
+    );
 }
 
 export default App;

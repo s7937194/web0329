@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Typewriter from "typewriter-effect";
 import Button from './Button';
 
-import { useMoralis } from "react-moralis"
+import { useMoralis, useMoralisWeb3Api } from "react-moralis"
 
 import {cryptoboysAddress, chain } from "../config"
 import CryptoBoyContract from "../abis/CryptoBoys.json"
@@ -43,6 +43,7 @@ const Title = styled.h2`
 
   
 `;
+
 const SubTitle = styled.h3`
   font-size: ${(props) => props.theme.fontlg};
   text-transform: capitalize;
@@ -80,7 +81,9 @@ const ButtonContainer = styled.div`
 `
 const TypeWriterText = () => {
 
-    const { user, authenticate, Moralis } = useMoralis();
+    const { user, account, authenticate, Moralis } = useMoralis();
+    const Web3Api = useMoralisWeb3Api();
+    let [count, setCount] = useState(1);
 
     async function initApp () {
         console.log(user);
@@ -104,18 +107,23 @@ const TypeWriterText = () => {
             abi: CryptoBoyContract,
         };
 
-        // const name = await Moralis.executeFunction({
-        //     functionName: "name",
-        //     ...options,
-        // });
-        // console.log(name);
-
         const mint = await Moralis.executeFunction({
             functionName: "mint",
-            msgValue: Moralis.Units.ETH("0.025"),
+            params : { amount: count.toString() }, 
+            msgValue: Moralis.Units.ETH("0.025") * count,
             ...options,
         });
         console.log(mint);
+    }
+
+    function incrementCount() {
+        count = count + 1;
+        setCount(count);
+    }
+
+    function decrementCount() {
+        count = count == 1 ? 1 : count - 1;
+        setCount(count);
     }
 
     return (
@@ -146,8 +154,13 @@ const TypeWriterText = () => {
         <SubTitle>Bored Of Apes? Try Something New.</SubTitle>
 
         {/*鑄造*/ }
+        
         <ButtonContainer>
-            <Button text="Mint" click={initApp}/>
+            {/* <div>{count}</div> */}
+            <Button style="light" text="+" click={incrementCount} />
+            <Button style="non-outline" text={count} />
+            <Button style="light" text="-" click={decrementCount} />
+            <Button text= "Mint" click={initApp}/>
         </ButtonContainer>
         </>
     );

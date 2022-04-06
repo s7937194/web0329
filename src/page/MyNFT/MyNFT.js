@@ -1,18 +1,18 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 
 import img1 from '../../assets/Nfts/bighead.svg';
-import img2 from '../../assets/Nfts/bighead-1.svg';
-import img3 from '../../assets/Nfts/bighead-2.svg';
-import img4 from '../../assets/Nfts/bighead-3.svg';
-import img5 from '../../assets/Nfts/bighead-4.svg';
-
+// import img2 from '../../assets/Nfts/bighead-1.svg';
+// import img3 from '../../assets/Nfts/bighead-2.svg';
+// import img4 from '../../assets/Nfts/bighead-3.svg';
+// import img5 from '../../assets/Nfts/bighead-4.svg';
 import ETH from '../../assets/icons8-ethereum-48.png'
-
 
 import { useMoralis } from "react-moralis"
 
-import {cryptoboysAddress, chain } from "../../config"
+import {cryptoboysAddress, marketAddress, chain, chunkSize } from "../../config"
+import CryptoBoyContract from "../../abis/CryptoBoys.json"
+import MarketContract from "../../abis/Market.json"
 
 const Section = styled.section`
 min-height: 100vh;
@@ -112,47 +112,83 @@ img{
 }
 `
 
-const NftItem = ({img, tokenId, price=0}) => {
+const NftItem = ({img, id=0, name="", price=1, func}) => {
     return(
-        <ImgContainer >
-            <img width={500} height={400}  src={img} alt="The Weirdos" />
+        <ImgContainer>
+            <img width={500} height={400}  src={img1} alt="The Weirdos" />
             <Details>
                 <div>
-                <span>Weirdos</span> <br />
-                <h1>#{tokenId}</h1>
+                    <span>Weirdos</span> <br />
+                    <h1>{name}</h1>
                 </div>
-
                 <div>
-                <h1>SELL {price}</h1>
-                
+                    {/* <span>Price</span>
+                    <Price>
+                        <img width={200} height={200}  src={ETH} alt="ETH" />
+                        <h1>{Number(price).toFixed(1)}</h1>
+                    </Price> */}
+                    <span>Sell</span>
+                    <h1 onClick={() => func(id)}>Add</h1>
                 </div>
+                
             </Details>
+            
         </ImgContainer>
     )
 } 
       
 const MyNFT = () => {
 
-    const { user, account, authenticate, Moralis } = useMoralis();
+    const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
+    const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
+    const { account, Moralis } = useMoralis();
     const [nfts, setNFTs] = useState([]);
 
-    async function initApp () {
-        console.log(user);
+    const addToMarket = async (_tokenId) => {
 
-        if (!user) {
-            try {
-                user = await authenticate({ signingMessage: "Hello World!" })
-                // allNFTs();
-            } catch(error) {
-                console.log(error)
-            }
-        } else {
-            // allNFTs();
+        await Moralis.enableWeb3();
+
+        const NFTOpts = {
+            contractAddress: cryptoboysAddress,
+            abi: CryptoBoyContract,
+        };
+
+        const MarketOpts = {
+            contractAddress: marketAddress,
+            abi: MarketContract,
+        };
+
+        const approveAddress = await Moralis.executeFunction({
+            functionName: "getApproved",
+            params : {tokenId : _tokenId},
+            ...NFTOpts,
+        });
+
+        if (approveAddress != marketAddress) {
+            const approve = await Moralis.executeFunction({
+                functionName: "approve",
+                params : {to : marketAddress, tokenId : _tokenId},
+                ...NFTOpts,
+            });
+            console.log(approve);
         }
+
+        const addListing = await Moralis.executeFunction({
+            functionName: "addListing",
+            params : {tokenId : _tokenId, price : 1},
+            ...MarketOpts,
+        });
+        console.log(addListing);
     }
 
-    async function allNFTs(){
-        // await Moralis.enableWeb3();
+    const allNFTs = async () => {
+
+        const startOptions = {
+            appId : APP_ID,
+            serverUrl : SERVER_URL,
+        }
+    
+        await Moralis.start(startOptions);
         
         const options = {
             address: account,
@@ -162,29 +198,29 @@ const MyNFT = () => {
         
         const allCryptoBoys = await Moralis.Web3API.account.getNFTsForContract(options);
 
+        setNFTs([]);
         allCryptoBoys.result.forEach(function(nft){
 
             let url = fixUrl(nft.token_uri);
-            let id = nft.token_id;
+
             fetch(url)
             .then(res => res.json())
             .then(data => {
 
-
-                var resp = {
-                    'img':fixUrl(data.image),
-                    'tokebId':id,
-                    'price':1,
+                var newElement = {
+                    'img' : fixUrl(data.image),
+                    'name': data.name,
+                    'id'  : nft.token_id,
                 }
 
-                nfts.push(resp);
+                setNFTs(nfts => [...nfts, newElement]);
             });
         })
-    }
+    };
 
     function fixUrl(url) {
         if (url.startsWith("ipfs")) {
-            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://ipfs/")[1];
+            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1];
         } else {
             if (url.endsWith("json")) {
                 return url + "?format=json";
@@ -192,30 +228,28 @@ const MyNFT = () => {
                 return url + ".json?format=json";
             }
         }
-    }
+    };
 
-    
-    allNFTs();
+    useEffect( () => {
+        allNFTs();
+    }, []);
+
+    function NFTList(props) {
+        const nfts = props.nfts;
+        const listItems = nfts.map((cryptoboy, index) =>
+            <NftItem key={index+1} img={cryptoboy.img} id={cryptoboy.id} name={cryptoboy.name} func={addToMarket} />
+        );
+        const groups = listItems.map((e, i) => { 
+            return i % chunkSize === 0 ? <Row key={i} direction="none">{listItems.slice(i, i + chunkSize)}</Row> : null; 
+        }).filter(e => { return e; });
+
+        return groups;
+    }
 
     return ( 
         <Section id="showcase">
-        <Row direction="none">
-        {nfts.map((cryptoboy) => {
-            console.log(cryptoboy);
-            return (
-                <NftItem img={cryptoboy.img}  tokebId={cryptoboy.tokebId} price={cryptoboy.price} />
-            )
-        })}
-            {/* <NftItem img={img1}  number={852} price={1}    />
-            <NftItem img={img2}  number={123} price={1.2}   />
-            <NftItem img={img3}  number={456} price={2.5}    />
-            <NftItem img={img4}  number={666} price={3.5}   />
-            <NftItem img={img5}  number={452} price={4.7}  /> */}
-    
-        </Row>
-
+            <NFTList nfts={nfts}/>
         </Section>
-
     );
 }
  

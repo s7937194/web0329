@@ -1,5 +1,11 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
+
+import { useMoralis } from "react-moralis"
+
+import {marketAddress, cryptoboysAddress, chunkSize } from "../../config"
+import MarketContract from "../../abis/Market.json"
+import CryptoBoysContract from "../../abis/CryptoBoys.json"
 
 import img1 from '../../assets/Nfts/bighead.svg';
 import img2 from '../../assets/Nfts/bighead-1.svg';
@@ -36,7 +42,6 @@ overflow: hidden;
   }
 }
 `
-
 const Row = styled.div`
 /* background-color: lightblue; */
 white-space: nowrap;
@@ -65,7 +70,6 @@ img{
   height: auto;
 }
 `
-
 const Details = styled.div`
 display: flex;
 justify-content: space-between;
@@ -96,7 +100,6 @@ h1{
 }
 
 `
-
 const Price = styled.div`
 display: flex;
 justify-content: flex-start;
@@ -108,50 +111,114 @@ img{
 
 }
 `
-const NftItem = ({img, number=0, price=0}) => {
 
-
-      
-      
-      return(
+const NftItem = ({img, name="", price=0}) => {
+    return(
         <ImgContainer >
-          <img width={500} height={400}  src={img} alt="The Weirdos" />
-          <Details>
+            <img width={500} height={400}  src={img} alt="The Weirdos" />
+            <Details>
             <div>
-              <span>Weirdos</span> <br />
-              <h1>#{number}</h1>
+                <span>Weirdos</span> <br />
+                <h1>{name}</h1>
             </div>
-    
+
             <div>
-                  <span>Price</span>
-                  <Price>
+                    <span>Price</span>
+                    <Price>
                         <img width={200} height={200}  src={ETH} alt="ETH" />
                         <h1>{Number(price).toFixed(1)}</h1>
-                  </Price>
+                    </Price>
             </div>
-          </Details>
+            </Details>
         </ImgContainer>
-      )
-    } 
-    
+    )
+} 
 
+const Market = () => {
 
+    const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
+    const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
+    const { account, Moralis } = useMoralis();
+    const [nfts, setNFTs] = useState([]);
 
-const MyNFT = () => {
-      return ( 
-            <Section id="showcase">
-            <Row direction="none">
-              <NftItem img={img1}  number={852} price={1}    />
-              <NftItem img={img2}  number={123} price={1.2}   />
-              <NftItem img={img3}  number={456} price={2.5}    />
-              <NftItem img={img4}  number={666} price={3.5}   />
-              <NftItem img={img5}  number={452} price={4.7}  />
+    async function getActiveListings(){
+        await Moralis.enableWeb3();
+
+        const options = {
+            contractAddress: marketAddress,
+            abi: MarketContract,
+        };
+
+        const activeList = await Moralis.executeFunction({
+            functionName: "getActiveListings",
+            params : {from : 0, length : 10000},
+            ...options,
+        });
+        console.log(activeList);
         
-            </Row>
+        setNFTs([]);
+        if ( activeList.length > 0 ) {
+            activeList.forEach(function(nft){
 
-            </Section>
+                let url = fixUrl(nft.tokenURI);
+                
+                fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    var newElement = {
+                        'img' : fixImageUrl(data.image),
+                        'name': data.name,
+                        'id'  : nft.tokenId,
+                    }
+    
+                    setNFTs(nfts => [...nfts, newElement]);
+                });
+            })
+        }
+    };
 
-       );
+    function fixUrl(url) {
+        if (url.startsWith("ipfs")) {
+            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1] + ".json?format=json";
+        } else {
+            if (url.endsWith("json")) {
+                return url + "?format=json";
+            }else {
+                return url + ".json?format=json";
+            }
+        }
+    };
+
+    function fixImageUrl(url) {
+        if (url.startsWith("ipfs")) {
+            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1];
+        } else {
+            return url;
+        }
+    };
+
+    useEffect( () =>{
+        getActiveListings();
+    }, [])
+
+    function NFTList(props) {
+        const nfts = props.nfts;
+        const listItems = nfts.map((cryptoboy, index) =>
+            <NftItem key={index+1} img={cryptoboy.img} id={cryptoboy.id} name={cryptoboy.name} />
+        );
+        const groups = listItems.map((e, i) => { 
+            return i % chunkSize === 0 ? <Row key={i} direction="none">{listItems.slice(i, i + chunkSize)}</Row> : null; 
+        }).filter(e => { return e; });
+
+        return groups;
+    }
+
+    return ( 
+        <Section id="showcase">
+            <NFTList nfts={nfts}/>
+        </Section>
+    );
 }
  
-export default MyNFT;
+export default Market;

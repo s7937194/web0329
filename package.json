@@ -11,7 +11,7 @@
     "ethers": "^5.6.2",
     "framer-motion": "^6.2.8",
     "gsap": "^3.9.1",
-    "moralis": "^1.5.7",
+    "moralis": "^1.5.8",
     "normalize.css": "^8.0.1",
     "react": "^17.0.2",
     "react-confetti": "^6.0.1",
