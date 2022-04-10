@@ -7,8 +7,10 @@ const Btn = styled.button`
     color: ${props => props.theme.body};
     outline: none;
     border: none;
+    margin-left: 10px;
+    margin-right: 10px;
 
-    font-size: ${props => props.theme.fontsm};
+    font-size: ${props => props.theme.fontmd};
     padding: 0.9rem 2.3rem;
     border-radius: 50px;
     cursor: pointer;
@@ -43,9 +45,13 @@ const BtnLight = styled.button`
     color: #202;
     outline: solid;
     border: none;
+    margin-left: 10px;
+    margin-right: 10px;
+    
+    
 
-    font-size: ${props => props.theme.fontsm};
-    padding: 0.9rem 2.3rem;
+    font-size: ${props => props.theme.fontmd};
+    padding: 0.9rem 1.2rem ;
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -80,7 +86,7 @@ const BtnNonLine = styled.button`
     outline: none;
     border: none;
 
-    font-size: ${props => props.theme.fontsm};
+    font-size: ${props => props.theme.fontmd};
     padding: 0.9rem 2.3rem;
     border-radius: 50px;
     cursor: pointer;

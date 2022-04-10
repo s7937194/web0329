@@ -14,15 +14,15 @@ import img10 from '../../assets/Nfts/bighead-9.svg';
 import ETH from '../../assets/icons8-ethereum-48.png'
 
 const Section = styled.section`
-min-height: 100vh;
-width: 100vw;
-background-color: ${props => props.theme.text};
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-position: relative;
-overflow: hidden;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: ${props => props.theme.text};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
 
 &>*:first-child{
   animation-duration: 20s;
@@ -41,29 +41,29 @@ overflow: hidden;
 }
 `
 const move = keyframes`
-0%{ transform: translateX(100%)   };
-100%{ transform: translateX(-100%)   }
+  0%{ transform: translateX(100%)   };
+  100%{ transform: translateX(-100%)   }
 
 `
 
 const Row = styled.div`
-/* background-color: lightblue; */
-white-space: nowrap;
-box-sizing:content-box;
-margin: 2rem 0;
-display: flex;
+  /* background-color: lightblue; */
+  white-space: nowrap;
+  box-sizing:content-box;
+  margin: 2rem 0;
+  display: flex;
 
-animation: ${move}  linear infinite ${props => props.direction};
+  animation: ${move}  linear infinite ${props => props.direction};
 
 
 `
 const ImgContainer = styled.div`
-width: 15rem;
-margin: 0 1rem;
-background-color:${props => props.theme.body};
+  width: 15rem;
+  margin: 0 1rem;
+  background-color:${props => props.theme.body};
 
-border-radius: 20px;
-cursor: pointer;
+  border-radius: 20px;
+  cursor: pointer;
 
 @media (max-width: 48em){
   width: 12rem;
@@ -79,14 +79,14 @@ img{
 `
 
 const Details = styled.div`
-display: flex;
-justify-content: space-between;
-padding: 0.8rem 1rem;
-background-color: ${props => props.theme.text};
-border: 2px solid ${props => `rgba(${props.theme.bodyRgba},0.5)`};
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  background-color: ${props => props.theme.text};
+  border: 2px solid ${props => `rgba(${props.theme.bodyRgba},0.5)`};
 
-border-bottom-left-radius: 20px;
-border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 
 span{
   font-size: ${props => props.theme.fontsm};
@@ -110,9 +110,9 @@ h1{
 `
 
 const Price = styled.div`
-display: flex;
-justify-content: flex-start;
-align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 
 img{
   width: 1rem;
@@ -143,8 +143,8 @@ let pause = (e) => {
         <div>
           <span>Price</span>
           <Price>
-          <img width={200} height={200}  src={ETH} alt="ETH" />
-          <h1>{Number(price).toFixed(1)}</h1>
+            <img width={200} height={200}  src={ETH} alt="ETH" />
+            <h1>{Number(price).toFixed(1)}</h1>
           </Price>
         </div>
       </Details>
@@ -160,24 +160,21 @@ const Showcase = () => {
 
   return(
     <Section id="showcase">
-    <Row direction="none" ref={Row1Ref}>
-      <NftItem img={img1}  number={852} price={1}   passRef = {Row1Ref} />
-      <NftItem img={img2}  number={123} price={1.2}   passRef = {Row1Ref} />
-      <NftItem img={img3}  number={456} price={2.5}   passRef = {Row1Ref} />
-      <NftItem img={img4}  number={666} price={3.5}   passRef = {Row1Ref} />
-      <NftItem img={img5}  number={452} price={4.7}   passRef = {Row1Ref} />
-
-
-    </Row>
-    <Row direction="reverse" ref={Row2Ref}>
-    <NftItem img={img6}  number={888} price={1.2}   passRef = {Row2Ref} />
-    <NftItem img={img7}  number={211} price={3.2}   passRef = {Row2Ref} />
-    <NftItem img={img8}  number={455} price={1.8}   passRef = {Row2Ref} />
-    <NftItem img={img9}  number={456} price={5.1}   passRef = {Row2Ref} />
-    <NftItem img={img10}  number={865} price={3.7}   passRef = {Row2Ref} />
-
-
-    </Row>
+      <Row direction="none" ref={Row1Ref}>
+        <NftItem img={img1}  number={852} price={1}   passRef = {Row1Ref} />
+        <NftItem img={img2}  number={123} price={1.2}   passRef = {Row1Ref} />
+        <NftItem img={img3}  number={456} price={2.5}   passRef = {Row1Ref} />
+        <NftItem img={img4}  number={666} price={3.5}   passRef = {Row1Ref} />
+        <NftItem img={img5}  number={452} price={4.7}   passRef = {Row1Ref} />
+      </Row>
+      
+      <Row direction="reverse" ref={Row2Ref}>
+        <NftItem img={img6}  number={888} price={1.2}   passRef = {Row2Ref} />
+        <NftItem img={img7}  number={211} price={3.2}   passRef = {Row2Ref} />
+        <NftItem img={img8}  number={455} price={1.8}   passRef = {Row2Ref} />
+        <NftItem img={img9}  number={456} price={5.1}   passRef = {Row2Ref} />
+        <NftItem img={img10}  number={865} price={3.7}   passRef = {Row2Ref} />
+      </Row>
     </Section>
   )
 }

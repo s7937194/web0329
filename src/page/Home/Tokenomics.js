@@ -4,15 +4,15 @@ import { Design, Develope} from './AllSvgs';
 
 
 const Section = styled.section`
-min-height: 100vh;
-width: 100vw;
-background-color: ${props => props.theme.text};
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-position: relative;
-overflow: hidden;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: ${props => props.theme.text};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
 
 &>*:first-child{
   animation-duration: 20s;
@@ -45,12 +45,12 @@ const Title = styled.h1`
   }
 `;
 const Container = styled.div`
-width: 75%;
-margin: 2rem auto;
+    width: 75%;
+    margin: 2rem auto;
 
-display: flex;
-justify-content: space-between;
-align-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
 
 @media (max-width: 64em){
   width: 80%;
@@ -70,48 +70,48 @@ align-content: center;
 `
 
 const Main = styled.div`
-border: 2px solid ${props => props.theme.text};
-color: ${props => props.theme.text};
-background-color: ${props => props.theme.body};
-padding: 2rem;
-width: 30vw;
-height: 60vh;
-z-index:3;
-line-height: 1.5;
-cursor: pointer;
+  border: 2px solid ${props => props.theme.text};
+  color: ${props => props.theme.text};
+  background-color: ${props => props.theme.body};
+  padding: 2rem;
+  width: 30vw;
+  height: 60vh;
+  z-index:3;
+  line-height: 1.5;
+  cursor: pointer;
 
-font-family: 'Ubuntu Mono',monospace;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
+  font-family: 'Ubuntu Mono',monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
 `
 
 const BoxTitle = styled.h2`
-display: flex;
-justify-content: center;
-align-items: center;
-font-size: calc(1em + 1vw);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: calc(1em + 1vw);
 
 
 
 &>*:first-child{
-margin-right: 1rem;
+  margin-right: 1rem;
 }
 `
 const Description = styled.div`
-color: ${props => props.theme.text};
-font-size: calc(0.6em + 1vw);
-padding: 0.5rem 0;
+  color: ${props => props.theme.text};
+  font-size: calc(0.6em + 1vw);
+  padding: 0.5rem 0;
 
 
 
 strong{
-    margin-bottom: 1rem;
-    text-transform: uppercase;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
 }
 ul,p{
-    margin-left: 2rem;
+  margin-left: 2rem;
 }
 `
 

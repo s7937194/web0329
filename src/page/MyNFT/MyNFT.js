@@ -1,254 +1,166 @@
 import React, {useState, useEffect} from 'react'
-import styled from 'styled-components'
-
 import img1 from '../../assets/Nfts/bighead.svg';
-// import img2 from '../../assets/Nfts/bighead-1.svg';
-// import img3 from '../../assets/Nfts/bighead-2.svg';
-// import img4 from '../../assets/Nfts/bighead-3.svg';
-// import img5 from '../../assets/Nfts/bighead-4.svg';
-import ETH from '../../assets/icons8-ethereum-48.png'
+import tw from 'tailwind-styled-components/dist/tailwind';
+import Avax from  './avax.svg'
 
-import { useMoralis } from "react-moralis"
 
-import {cryptoboysAddress, marketAddress, chain, chunkSize } from "../../config"
-import CryptoBoyContract from "../../abis/CryptoBoys.json"
-import MarketContract from "../../abis/Market.json"
 
-const Section = styled.section`
-min-height: 100vh;
-width: 100vw;
-background-color: ${props => props.theme.text};
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-position: relative;
-overflow: hidden;
-
-&>*:first-child{
-  animation-duration: 20s;
-
-  @media (max-width: 30em){
-    animation-duration: 15s;
-
-  }
-}
-&>*:last-child{
-  animation-duration: 15s;
-  @media (max-width: 30em){
-    animation-duration: 10s;
-
-  }
-}
+const Section = tw.div`
+flex 
+justify-center 
+items-center
+w-screen 
+bg-black
 `
 
-const ImgContainer = styled.div`
-width: 15rem;
-margin: 0 1rem;
-background-color:${props => props.theme.body};
-
-border-radius: 20px;
-cursor: pointer;
-
-@media (max-width: 48em){
-  width: 12rem;
-  }
-  @media (max-width: 30em){
-  width: 10rem;
-  }
-
-img{
-  width: 100%;
-  height: auto;
-}
+const Container = tw.div`
+flex 
+flex-col
+items-center
+w-[90%]
+h-[90%]
 `
-const Row = styled.div`
-/* background-color: lightblue; */
-white-space: nowrap;
-box-sizing:content-box;
-margin: 2rem 0;
-display: flex;
+const RewardBox = tw.div`
+m-20
+flex 
+justify-evenly 
+items-center
+`
+const Reward = tw.div`
+mx-20
+`
+const Tittle = tw.div`
+text-white
+text-2xl
+font-bold
 `
 
-const Details = styled.div`
-display: flex;
-justify-content: space-between;
-padding: 0.8rem 1rem;
-background-color: ${props => props.theme.text};
-border: 2px solid ${props => `rgba(${props.theme.bodyRgba},0.5)`};
-
-border-bottom-left-radius: 20px;
-border-bottom-right-radius: 20px;
-
-span{
-  font-size: ${props => props.theme.fontsm};
-  color:${props => `rgba(${props.theme.bodyRgba},0.5)`};
-  font-weight:600;
-  line-height: 1.5rem;
-}
-
-h1{
-  font-size: ${props => props.theme.fontmd};
-  color: ${props => props.theme.body};
-  font-weight:600;
-
-  @media (max-width: 30em){
-    font-size: ${props => props.theme.fontsm};
-
-  }
-
-}
+const NftBox = tw.div`
+w-[70%]
+flex 
+items-center
+flex-wrap
+`
+const NftItem = tw.div`
+w-[20%]
+bg-white
+rounded-xl
+flex 
+flex-col
+overflow-hidden
+m-8
 `
 
-const Price = styled.div`
-display: flex;
-justify-content: flex-start;
-align-items: center;
 
-img{
-  width: 1rem;
-  height: auto;
-
-}
-`
-
-const NftItem = ({img, id=0, name="", price=1, func}) => {
-    return(
-        <ImgContainer>
-            <img width={500} height={400}  src={img1} alt="The Weirdos" />
-            <Details>
-                <div>
-                    <span>Weirdos</span> <br />
-                    <h1>{name}</h1>
-                </div>
-                <div>
-                    {/* <span>Price</span>
-                    <Price>
-                        <img width={200} height={200}  src={ETH} alt="ETH" />
-                        <h1>{Number(price).toFixed(1)}</h1>
-                    </Price> */}
-                    <span>Sell</span>
-                    <h1 onClick={() => func(id)}>Add</h1>
-                </div>
-                
-            </Details>
-            
-        </ImgContainer>
-    )
-} 
-      
 const MyNFT = () => {
-
-    const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
-    const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
-    const { account, Moralis } = useMoralis();
-    const [nfts, setNFTs] = useState([]);
-
-    const addToMarket = async (_tokenId) => {
-
-        await Moralis.enableWeb3();
-
-        const NFTOpts = {
-            contractAddress: cryptoboysAddress,
-            abi: CryptoBoyContract,
-        };
-
-        const MarketOpts = {
-            contractAddress: marketAddress,
-            abi: MarketContract,
-        };
-
-        const approveAddress = await Moralis.executeFunction({
-            functionName: "getApproved",
-            params : {tokenId : _tokenId},
-            ...NFTOpts,
-        });
-
-        if (approveAddress != marketAddress) {
-            const approve = await Moralis.executeFunction({
-                functionName: "approve",
-                params : {to : marketAddress, tokenId : _tokenId},
-                ...NFTOpts,
-            });
-            console.log(approve);
-        }
-
-        const addListing = await Moralis.executeFunction({
-            functionName: "addListing",
-            params : {tokenId : _tokenId, price : 1},
-            ...MarketOpts,
-        });
-        console.log(addListing);
-    }
-
-    const allNFTs = async () => {
-
-        const startOptions = {
-            appId : APP_ID,
-            serverUrl : SERVER_URL,
-        }
     
-        await Moralis.start(startOptions);
-        
-        const options = {
-            address: account,
-            token_address: cryptoboysAddress,
-            chain: chain,
-        };
-        
-        const allCryptoBoys = await Moralis.Web3API.account.getNFTsForContract(options);
-
-        setNFTs([]);
-        allCryptoBoys.result.forEach(function(nft){
-
-            let url = fixUrl(nft.token_uri);
-
-            fetch(url)
-            .then(res => res.json())
-            .then(data => {
-
-                var newElement = {
-                    'img' : fixUrl(data.image),
-                    'name': data.name,
-                    'id'  : nft.token_id,
-                }
-
-                setNFTs(nfts => [...nfts, newElement]);
-            });
-        })
-    };
-
-    function fixUrl(url) {
-        if (url.startsWith("ipfs")) {
-            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1];
-        } else {
-            if (url.endsWith("json")) {
-                return url + "?format=json";
-            }else {
-                return url + ".json?format=json";
-            }
+    const [isSwitch,setIsSwitch] = useState(false)
+    const clickPop =() =>{
+        if (isSwitch ==false) {
+            setIsSwitch(true)
+        }else {
+            setIsSwitch(false)
         }
-    };
-
-    useEffect( () => {
-        allNFTs();
-    }, []);
-
-    function NFTList(props) {
-        const nfts = props.nfts;
-        const listItems = nfts.map((cryptoboy, index) =>
-            <NftItem key={index+1} img={cryptoboy.img} id={cryptoboy.id} name={cryptoboy.name} func={addToMarket} />
-        );
-        const groups = listItems.map((e, i) => { 
-            return i % chunkSize === 0 ? <Row key={i} direction="none">{listItems.slice(i, i + chunkSize)}</Row> : null; 
-        }).filter(e => { return e; });
-
-        return groups;
     }
 
+    const Popup = () => {
+        return(
+            <div class="bg-black bg-opacity-80 absolute inset-0  justify-center items-center flex z-30 h-[220%]">
+                <div class="bg-gray-200 max-w-sm py-4 px-5 rounded shadow-xl text-gray-800 w-[15%] top-[20%] absolute">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-lg font-bold my-2">Sell your NFT </h4>
+                        <svg onClick={clickPop} class="h-6 w-6 cursor-pointer p-1 hover:bg-gray-300 rounded-full" id="close-modal" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd">
+    
+                            </path>
+                        </svg>
+                    </div>
+    
+                    <div class="mt-2 text-sm">
+                        <input type="number"  step="0.01"  className="block w-full px-3 py-2 mt-1 text-sm bg-white border rounded-md shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500"/>
+                        <p>Price in AVAX</p>
+                    </div>
+                    <div class="mt-3 flex justify-end space-x-3">
+                        <button onClick={clickPop} class="px-3 py-1 rounded hover:bg-red-300 hover:bg-opacity-50 hover:text-red-900">Cancel</button>
+                        <button class="px-3 py-1 bg-red-800 text-gray-200 hover:bg-red-600 rounded">List NFT</button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    
+
+   
     return ( 
-        <Section id="showcase">
-            <NFTList nfts={nfts}/>
+        <Section>
+            {isSwitch && <Popup/>}
+            
+            <Container>
+                <RewardBox>
+                    <Reward>
+                        <Tittle>Mint Rewards</Tittle>
+                        <div className="flex items-center justify-center">
+                            <div className="m-2 text-white">2.2</div>
+                            <img src={Avax} width={20} />
+                            <button className="px-2 m-2 text-white bg-red-800 rounded-md" >Calim</button>
+                        </div>
+                    </Reward>
+                    <Reward>
+                        <Tittle>Market Rewards</Tittle>
+                        <div className="flex items-center justify-center">
+                            <div className="m-2 text-white">25</div>
+                            <img src={Avax} width={20} />
+                            <button className="px-2 m-2 text-white bg-red-800 rounded-md" >Calim</button>
+                        </div>
+                    </Reward>
+                </RewardBox>
+
+                <Tittle>My NFTs</Tittle>
+                <NftBox>
+                
+                    <NftItem>
+                        <img src={img1} width={300} />
+                        <div className="flex bg-gray-800">
+                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
+                            <button onClick={clickPop} className="flex-1 w-screen text-white bg-red-800"> Sell</button>
+                        </div>
+                    </NftItem>
+
+                    <NftItem>
+                        <img src={img1} width={300} />
+                        <div className="flex bg-gray-800">
+                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
+                            <button onClick={clickPop} className="flex-1 w-screen text-white bg-red-800"> Sell</button>
+                        </div>
+                    </NftItem>
+                    <NftItem>
+                        <img src={img1} width={300} />
+                        <div className="flex bg-gray-800">
+                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
+                            <button onClick={clickPop} className="flex-1 w-screen text-white bg-red-800"> Sell</button>
+                        </div>
+                    </NftItem>
+                    <NftItem>
+                        <img src={img1} width={300} />
+                        <div className="flex bg-gray-800">
+                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
+                            <button onClick={clickPop} className="flex-1 w-screen text-white bg-red-800"> Sell</button>
+                        </div>
+                    </NftItem>
+                    <NftItem>
+                        <img src={img1} width={300} />
+                        <div className="flex bg-gray-800">
+                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
+                            <button onClick={clickPop} className="flex-1 w-screen text-white bg-red-800"> Sell</button>
+                        </div>
+                    </NftItem>
+
+                    
+                </NftBox>
+            </Container>
         </Section>
     );
 }

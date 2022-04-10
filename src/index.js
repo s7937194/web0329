@@ -11,6 +11,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import Market from "./page/Market/Market";
 import { MoralisProvider } from "react-moralis"
+import './styles/globals.css'
 
 const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
 const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
