@@ -2,6 +2,7 @@ import React,{useState} from 'react'
 import styled from 'styled-components'
 import Button from './Button'
 import Logo from './Logo'
+import { useMoralis } from "react-moralis";
 
 const Section = styled.section`
 width: 100vw;
@@ -68,7 +69,6 @@ touch-action: none;
 }
 
 `
-
 const MenuItem = styled.li`
 margin: 0 1rem;
 color: ${props => props.theme.text};
@@ -143,23 +143,24 @@ transition: all 0.3s ease;
 
 `
 
-
 const Navigation = () => {
 
+  const { authenticate, isAuthenticated, logout} = useMoralis();
+
   const [click, setClick] = useState(false);
-  
-const scrollTo = (id) => {
+    
+  const scrollTo = (id) => {
 
-  let element = document.getElementById(id);
+    let element = document.getElementById(id);
 
-  element.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-    inline: 'nearest'
-  })
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest'
+    })
 
-  setClick(!click);
-}
+    setClick(!click);
+  }
 
   return (
     
@@ -180,12 +181,20 @@ const scrollTo = (id) => {
 
           <MenuItem>
             <div className="mobile">
-            <Button text="Connect Wallet" link="https://google.com" />
+            {!isAuthenticated ? (
+              <Button text="Connect Wallet" click={authenticate}/>
+            ) : (
+              <Button text="Logout" click={logout}/>
+            )}
             </div>
           </MenuItem>
         </Menu>
           <div className="desktop">
-          <Button text="Connect Wallet" link="https://google.com" />
+            {!isAuthenticated ? (
+              <Button text="Connect Wallet" click={authenticate}/>
+            ) : (
+              <Button text="Logout" click={logout}/>
+            )}
           </div>
 
       </NavBar>

@@ -4,11 +4,11 @@ import astronaut from './spaceman.png'
 
 
 const Section = styled.section`
-min-height: 100vh;
-width: 100vw;
-background-color: ${props => props.theme.body};
-position: relative;
-overflow: hidden;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: ${props => props.theme.body};
+  position: relative;
+  overflow: hidden;
 `
 const Title = styled.h1`
   font-size: ${(props) => props.theme.fontxxl};
@@ -38,7 +38,7 @@ const Main =  styled.div`
   justify-content: center;
   align-items: center;
   font-size: calc(0.6rem + 1vw);
- backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   
   position: absolute;
   left: calc(5rem + 5vw);
@@ -48,19 +48,19 @@ const Main =  styled.div`
 `
 
 const float = keyframes`
-0% { transform: translateY(-10px) }
-50% { transform: translateY(15px) translateX(15px) }
-100% { transform: translateY(-10px) }
+  0% { transform: translateY(-10px) }
+  50% { transform: translateY(15px) translateX(15px) }
+  100% { transform: translateY(-10px) }
 `
 const Spaceman = styled.div`
-position: absolute;
-top: 10%;
-right: 5%;
-width: 20vw;
-animation: ${float} 4s ease infinite;
-img{
-    width: 100%;
-    height: auto;
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  width: 20vw;
+  animation: ${float} 4s ease infinite;
+  img{
+  width: 100%;
+  height: auto;
 }
 `
 
