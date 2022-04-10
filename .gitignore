@@ -27,3 +27,5 @@ yarn-error.log*
 .netlify
 secrets.json
  No newline at end of file
+
+.idea
