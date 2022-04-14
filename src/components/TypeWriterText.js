@@ -157,9 +157,9 @@ const TypeWriterText = () => {
         
         <ButtonContainer>
             {/* <div>{count}</div> */}
-            <Button style="light" text="+" click={incrementCount} />
-            <Button style="non-outline" text={count} />
             <Button style="light" text="-" click={decrementCount} />
+            <Button style="non-outline" text={count} />
+            <Button style="light" text="+" click={incrementCount} />
             <Button text= "Mint" click={initApp}/>
         </ButtonContainer>
         </>

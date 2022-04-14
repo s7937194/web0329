@@ -119,28 +119,29 @@ const Market = () => {
         });
         console.log(listings);
 
-        // setNFTs([]);
-        // listings.result.forEach(function(nft){
+        setNFTs([]);
+        listings.forEach( function(nft){
 
-        //     let url = fixUrl(nft.token_uri);
-            
-        //     fetch(url)
-        //     .then(res => res.json())
-        //     .then(data => {
+            let url = fixUrl(nft.tokenURI);
+            console.log(url);
 
-        //         var newElement = {
-        //             'img' : fixUrl(data.image),
-        //             'name': data.name,
-        //             'id'  : nft.token_id,
-        //         }
-        //         setNFTs(nfts => [...nfts, newElement]);
-        //     });
-        // })
+            fetch(url).then(res => res.json()).then(data => {
+
+                console.log(data);
+
+                var newElement = {
+                    'img' : fixImageUrl(data.image),
+                    'name': data.name,
+                    'id'  : nft.tokenId,
+                }
+                setNFTs(nfts => [...nfts, newElement]);
+            });
+        })
     };
 
     function fixUrl(url) {
         if (url.startsWith("ipfs")) {
-            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1];
+            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1]+".json?format=json";
         } else {
             if (url.endsWith("json")) {
                 return url + "?format=json";
@@ -148,6 +149,13 @@ const Market = () => {
                 return url + ".json?format=json";
             }
         }
+    };
+
+    function fixImageUrl(url) {
+        if (url.startsWith("ipfs")) {
+            return "https://gateway.pinata.cloud/ipfs/" + url.split("ipfs://")[1];
+        }
+        return url
     };
 
     useEffect( () => {
@@ -181,6 +189,18 @@ const Market = () => {
             </div>
         )
     }
+
+    const NftItemData = ({ img, id=0, name="" }) => {
+        return(
+            <NftItem>
+                <img src={img1} width={300} />
+                <div className="flex bg-gray-800">
+                    <div className="m-2 text-2l font-bold text-white flex-2">{name}</div>
+                    <button className="flex-1 w-screen text-white bg-red-800"> Buy</button>
+                </div>
+            </NftItem>
+        )
+    } 
 
     const Recent = () => {
         return(
@@ -608,47 +628,14 @@ const Market = () => {
                     </div>
                 </div>
 
-                
-
                 <NftBox>
-                    <NftItem>
-                        <img src={img1} width={300} />
-                        <div className="flex bg-gray-800">
-                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
-                            <button className="flex-1 w-screen text-white bg-red-800"> Buy</button>
-                        </div>
-                    </NftItem>
-
-                    <NftItem>
-                        <img src={img1} width={300} />
-                        <div className="flex bg-gray-800">
-                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
-                            <button  className="flex-1 w-screen text-white bg-red-800"> Buy</button>
-                        </div>
-                    </NftItem>
-                    <NftItem>
-                        <img src={img1} width={300} />
-                        <div className="flex bg-gray-800">
-                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
-                            <button  className="flex-1 w-screen text-white bg-red-800"> Buy</button>
-                        </div>
-                    </NftItem>
-                    <NftItem>
-                        <img src={img1} width={300} />
-                        <div className="flex bg-gray-800">
-                            <div className="m-2 text-2xl font-bold text-white flex-2">Weirdos #666</div>
-                            <button  className="flex-1 w-screen text-white bg-red-800"> Buy</button>
-                        </div>
-                    </NftItem>
-                    <NftItem>
-                        <img src={img1} width={300} />
-                        <div className="flex bg-gray-800">
-                            <div className="m-2 text-2l font-bold text-white flex-2">Weirdos #666</div>
-                            <button  className="flex-1 w-screen text-white bg-red-800"> Buy</button>
-                        </div>
-                    </NftItem>
-
-                    
+                    {nfts.length > 0 ? (
+                        nfts.sort((a, b) => (a.id > b.id) ? 1 : -1).map((cryptoboy, index) => {
+                            return (
+                                <NftItemData key={index} img={img1} id={cryptoboy.id} name={cryptoboy.name} />
+                            );
+                        })
+                    ):null} 
                 </NftBox>
             </Container>
         </Section>

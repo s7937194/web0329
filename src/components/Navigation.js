@@ -1,8 +1,9 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import styled from 'styled-components'
 import Button from './Button'
 import Logo from './Logo'
 import { useMoralis } from "react-moralis";
+import { ENV_ChainId } from '../config'
 
 const Section = styled.section`
 width: 100vw;
@@ -145,61 +146,103 @@ transition: all 0.3s ease;
 
 const Navigation = () => {
 
-  const { authenticate, isAuthenticated, logout} = useMoralis();
+    const { account, authenticate, isAuthenticated, logout, Moralis} = useMoralis();
 
-  const [click, setClick] = useState(false);
+    const [click, setClick] = useState(false);
+    const [address, setAddress] = useState("Logout");
+
+    // const [chainId, setChainId] = useState(0);
     
-  const scrollTo = (id) => {
-
-    let element = document.getElementById(id);
-
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest'
-    })
-
-    setClick(!click);
-  }
-
-  return (
+    useEffect( async () => {
+        // initApp();
+        setAddress(account.slice(0, 10));
+    }, [isAuthenticated])
     
-    <Section id="navigation">
-      <NavBar>
-        <Logo />
-        <HamburgerMenu  click={click}  onClick={() => setClick(!click)}>
-          &nbsp;
-        </HamburgerMenu>
-        <Menu click={click}>
-          <MenuItem onClick={() => scrollTo('./home')}  ><a href='/'>Home</a></MenuItem>
-          <MenuItem onClick={() => scrollTo('./about')}  >About</MenuItem>
-          <MenuItem onClick={() => scrollTo('roadmap')}  >Roadmap</MenuItem>
-          <MenuItem onClick={() => scrollTo('team')}  >Team</MenuItem>
-          <MenuItem onClick={() => scrollTo('faq')}  >Faq</MenuItem>
-          <MenuItem ><a href='/Mynft'>MyNFT</a></MenuItem>
-          <MenuItem ><a href='/Market'>Market</a></MenuItem>
+    const initApp = async () => {
+        await Moralis.enableWeb3();
 
-          <MenuItem>
-            <div className="mobile">
-            {!isAuthenticated ? (
-              <Button text="Connect Wallet" click={authenticate}/>
-            ) : (
-              <Button text="Logout" click={logout}/>
-            )}
-            </div>
-          </MenuItem>
-        </Menu>
-          <div className="desktop">
-            {!isAuthenticated ? (
-              <Button text="Connect Wallet" click={authenticate}/>
-            ) : (
-              <Button text="Logout" click={logout}/>
-            )}
-          </div>
+        // ScrollTrigger.refresh()
+        let chainId = await Moralis.chainId;
 
-      </NavBar>
-    </Section>
-  )
+        if (chainId != ENV_ChainId) {
+            const chainIdHex = await Moralis.switchNetwork(ENV_ChainId);
+            console.log(chainIdHex);
+        }
+        if (!isAuthenticated) {
+            await authenticate();
+        }
+    }
+    
+    const addAVAXChain = async () => {
+        const chainId = 43114;
+        const chainName = "Avalanche Mainnet";
+        const currencyName = "AVAX";
+        const currencySymbol = "AVAX";
+        const rpcUrl = "https://api.avax.network/ext/bc/C/rpc";
+        const blockExplorerUrl = "https://cchain.explorer.avax.network/";
+
+        await Moralis.addNetwork(
+            chainId,
+            chainName,
+            currencyName,
+            currencySymbol,
+            rpcUrl,
+            blockExplorerUrl
+        );
+    }
+
+    const scrollTo = (id) => {
+
+        let element = document.getElementById(id);
+
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest'
+        })
+
+        setClick(!click);
+    }
+
+
+    return (
+
+        <Section id="navigation">
+            <NavBar>
+            <Logo />
+            <HamburgerMenu  click={click}  onClick={() => setClick(!click)}>
+                &nbsp;
+            </HamburgerMenu>
+            <Menu click={click}>
+                <MenuItem onClick={() => scrollTo('./home')}  ><a href='/'>Home</a></MenuItem>
+                <MenuItem onClick={() => scrollTo('./about')}  >About</MenuItem>
+                <MenuItem onClick={() => scrollTo('roadmap')}  >Roadmap</MenuItem>
+                <MenuItem onClick={() => scrollTo('team')}  >Team</MenuItem>
+                <MenuItem onClick={() => scrollTo('faq')}  >Faq</MenuItem>
+                <MenuItem ><a href='/MyNFT'>MyNFT</a></MenuItem>
+                <MenuItem ><a href='/Market'>Market</a></MenuItem>
+
+                <MenuItem>
+                <div className="mobile">
+                {!isAuthenticated ? (
+                    <Button text="Connect Wallet" click={initApp}/>
+                ) : (
+                    <Button text={address} click={logout}/>
+                )}
+                </div>
+                </MenuItem>
+            </Menu>
+                <div className="desktop">
+                {!isAuthenticated ? (
+                    <Button text="Connect Wallet" click={initApp}/>
+                ) : (
+                    <Button text={address} click={logout}/>
+                )}
+                </div>
+
+            </NavBar>
+        </Section>
+    )
 }
 
 export default Navigation
