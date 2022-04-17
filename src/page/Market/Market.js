@@ -334,7 +334,7 @@ const Market = () => {
                                                 <span>From</span>
                                                 <a className="text-white underline" href="">0xddc1...7de2bc</a>
                                             </div>
-                                            <div className="px-4 text-2xl xs:px-xs"> >></div>
+                                            <div className="px-4 text-2xl xs:px-xs"> &gt;&gt;</div>
                                             <div className="flex flex-col text-gray-500">
                                                 <span>To</span>
                                                 <a className="text-white underline" href="">0xa5b7...c68de6</a>
@@ -370,7 +370,7 @@ const Market = () => {
                                                 <span>From</span>
                                                 <a className="text-white underline" href="">0xddc1...7de2bc</a>
                                             </div>
-                                            <div className="px-4 text-2xl xs:px-xs"> >></div>
+                                            <div className="px-4 text-2xl xs:px-xs"> &gt;&gt;</div>
                                             <div className="flex flex-col text-gray-500">
                                                 <span>To</span>
                                                 <a className="text-white underline" href="">0xa5b7...c68de6</a>
@@ -406,7 +406,7 @@ const Market = () => {
                                                 <span>From</span>
                                                 <a className="text-white underline" href="">0xddc1...7de2bc</a>
                                             </div>
-                                            <div className="px-4 text-2xl xs:px-xs"> >></div>
+                                            <div className="px-4 text-2xl xs:px-xs"> &gt;&gt;</div>
                                             <div className="flex flex-col text-gray-500">
                                                 <span>To</span>
                                                 <a className="text-white underline" href="">0xa5b7...c68de6</a>
@@ -442,7 +442,7 @@ const Market = () => {
                                                 <span>From</span>
                                                 <a className="text-white underline" href="">0xddc1...7de2bc</a>
                                             </div>
-                                            <div className="px-4 text-2xl xs:px-xs"> >></div>
+                                            <div className="px-4 text-2xl xs:px-xs"> &gt;&gt;</div>
                                             <div className="flex flex-col text-gray-500">
                                                 <span>To</span>
                                                 <a className="text-white underline" href="">0xa5b7...c68de6</a>
@@ -478,7 +478,7 @@ const Market = () => {
                                                 <span>From</span>
                                                 <a className="text-white underline" href="">0xddc1...7de2bc</a>
                                             </div>
-                                            <div className="px-4 text-2xl xs:px-xs"> >></div>
+                                            <div className="px-4 text-2xl xs:px-xs"> &gt;&gt;</div>
                                             <div className="flex flex-col text-gray-500">
                                                 <span>To</span>
                                                 <a className="text-white underline" href="">0xa5b7...c68de6</a>
@@ -514,7 +514,7 @@ const Market = () => {
                                                 <span>From</span>
                                                 <a className="text-white underline" href="">0xddc1...7de2bc</a>
                                             </div>
-                                            <div className="px-4 text-2xl xs:px-xs"> >> </div>
+                                            <div className="px-4 text-2xl xs:px-xs"> &gt;&gt; </div>
                                             <div className="flex flex-col text-gray-500">
                                                 <span>To</span>
                                                 <a className="text-white underline" href="">0xa5b7...c68de6</a>
