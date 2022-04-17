@@ -6,7 +6,7 @@ import 'antd/dist/antd.css';
 import { Select } from 'antd';
 
 import { useMoralis } from "react-moralis"
-import {marketAddress, chain } from "../../config"
+import {cryptoboysAddress, marketAddress, chain } from "../../config"
 import MarketContract from "../../abis/Market.json"
 
 const { Option } = Select;
@@ -79,6 +79,13 @@ const Market = () => {
     const [ isPopSwitch, setIsPopSwitch ] = useState(false)
     const [ isRecentSwitch, setIsRecentSwitch ] = useState(false)
     const [ isFilterSwitch, setIsFilterSwitch ] = useState(false)
+
+    const [ totalActiveListings, setTotalActiveListings ] = useState(0);
+    const [ totalSales, setTotalSales ] = useState(0);
+    const [ highestSalePrice, setHighestSalePrice ] = useState(0);
+    const [ ownerCount, setOwnerCounts ] = useState(0);
+
+
     
     const clickPop =() => {
         if (!isPopSwitch) {
@@ -104,6 +111,80 @@ const Market = () => {
         }
     }
 
+    const getTotalActiveListings = async () => {
+        await Moralis.enableWeb3();
+        const options = {
+            contractAddress: marketAddress,
+            abi: MarketContract,
+        };
+
+        const resp = await Moralis.executeFunction({
+            functionName: "totalActiveListings",
+            ...options,
+        });
+
+        setTotalActiveListings(resp.toNumber());
+    }
+
+    const getHighestSalePrice = async () => {
+        await Moralis.enableWeb3();
+        const options = {
+            contractAddress: marketAddress,
+            abi: MarketContract,
+        };
+
+        const resp = await Moralis.executeFunction({
+            functionName: "highestSalePrice",
+            ...options,
+        });
+
+        setHighestSalePrice(resp.toNumber());
+    }
+
+    const getTotalSales = async () => {
+        await Moralis.enableWeb3();
+        const options = {
+            contractAddress: marketAddress,
+            abi: MarketContract,
+        };
+
+        const resp = await Moralis.executeFunction({
+            functionName: "totalSales",
+            ...options,
+        });
+
+        setTotalSales(resp.toNumber());
+    }
+
+    const getNFTOwners = async () => {
+        const options = { address: cryptoboysAddress, chain: chain };
+        const nftOwners = await Moralis.Web3API.token.getNFTOwners(options);
+
+        console.log(nftOwners);
+
+        let arr1 = [];
+        nftOwners.result.forEach(async (nftInfo) => {
+            if (!arr1.includes(nftInfo.owner_of)) {
+                arr1.push(nftInfo.owner_of);
+            }
+            if (nftInfo.owner_of === "0x4ff0f70fd1c22ac10da96e889406dabd802d4208") {
+                // nfts.push(nftInfo);
+                let url = fixUrl(nftInfo.token_uri);
+                fetch(url).then(res => res.json()).then(data => {
+                    var newElement = {
+                        'img' : fixImageUrl(data.image),
+                        'name': data.name,
+                        'id'  : nftInfo.token_id,
+                    }
+                    // setNFTs(nfts => [...nfts, newElement]);
+                    nfts.push(newElement);
+                });
+            }
+        });
+        setOwnerCounts(arr1.length);
+        console.log(nfts);
+    }
+
     const allNFTs = async () => {
 
         await Moralis.enableWeb3();
@@ -114,21 +195,15 @@ const Market = () => {
 
         const listings = await Moralis.executeFunction({
             functionName: "getActiveListings",
-            params : { from: 0, length: 100 }, 
+            params : { from: 0, length: 10000 }, 
             ...options,
         });
-        console.log(listings);
 
         setNFTs([]);
         listings.forEach( function(nft){
 
             let url = fixUrl(nft.tokenURI);
-            console.log(url);
-
             fetch(url).then(res => res.json()).then(data => {
-
-                console.log(data);
-
                 var newElement = {
                     'img' : fixImageUrl(data.image),
                     'name': data.name,
@@ -158,8 +233,12 @@ const Market = () => {
         return url
     };
 
-    useEffect( () => {
-        allNFTs();
+    useEffect( async () => {
+        // await allNFTs();
+        await getTotalActiveListings();
+        await getTotalSales();
+        await getHighestSalePrice();
+        await getNFTOwners();
     }, []);
 
     const Popup = () => {
@@ -471,27 +550,27 @@ const Market = () => {
                     <Info>
                         <Tittle>Total Volume</Tittle>
                         <div className="flex items-center justify-center">
-                            <div className="m-2 text-white">51852.1644</div>
+                            <div className="m-2 text-white">{totalSales}</div>
                             <img src={Avax} width={20} />
                         </div>
                     </Info>
                     <Info>
                         <Tittle>Total Sales</Tittle>
                         <div className="flex items-center justify-center">
-                            <div className="m-2 text-white">6735</div>
+                            <div className="m-2 text-white">{totalActiveListings}</div>
                         </div>
                     </Info>
                     <Info>
                         <Tittle>Highest Sale Price</Tittle>
                         <div className="flex items-center justify-center">
-                            <div className="m-2 text-white">1200</div>
+                            <div className="m-2 text-white">{highestSalePrice}</div>
                             <img src={Avax} width={20} />
                         </div>
                     </Info>
                     <Info>
-                        <Tittle>Distributed</Tittle>
+                        <Tittle>Holders</Tittle>
                         <div className="flex items-center justify-center">
-                            <div className="m-2 text-white">1037.0433</div>
+                            <div className="m-2 text-white">{ownerCount}</div>
                             <img src={Avax} width={20} />
                         </div>
                     </Info>
